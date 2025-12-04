@@ -44,8 +44,12 @@ COPY . .
 # Create uploads directory
 RUN mkdir -p uploads
 
+# Copy and make startup script executable
+COPY start.sh .
+RUN chmod +x start.sh
+
 # Expose port
 EXPOSE 8000
 
-# Run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application with migrations
+CMD ["./start.sh"]
