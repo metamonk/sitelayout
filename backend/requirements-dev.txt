@@ -1,0 +1,13 @@
+-r requirements.txt
+
+# Development tools
+black==24.10.0
+flake8==7.1.1
+mypy==1.13.0
+isort==5.13.2
+pre-commit==4.0.1
+
+# Testing
+pytest-cov==6.0.0
+pytest-mock==3.14.0
+faker==33.1.0
