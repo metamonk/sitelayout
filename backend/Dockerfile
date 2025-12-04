@@ -1,8 +1,11 @@
 # Multi-stage build for Python backend
 FROM python:3.11-slim as builder
 
-# Install system dependencies for geospatial libraries
+# Install system dependencies for geospatial libraries and build tools
 RUN apt-get update && apt-get install -y \
+    build-essential \
+    g++ \
+    gcc \
     gdal-bin \
     libgdal-dev \
     libgeos-dev \
