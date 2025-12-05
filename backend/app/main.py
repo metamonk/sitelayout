@@ -33,6 +33,33 @@ async def health_check():
     return {"status": "healthy"}
 
 
+@app.get("/health/db")
+async def database_health_check():
+    """Check database connectivity."""
+    from sqlalchemy import text
+
+    from app.db.base import engine
+
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT 1"))
+            result.fetchone()
+            # Also check PostGIS
+            postgis_result = conn.execute(text("SELECT PostGIS_Version()"))
+            postgis_version = postgis_result.fetchone()[0]
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "postgis_version": postgis_version,
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "database": "disconnected",
+            "error": str(e),
+        }
+
+
 # API routers will be added here
 # from app.api import auth, projects, files, terrain, assets
 
