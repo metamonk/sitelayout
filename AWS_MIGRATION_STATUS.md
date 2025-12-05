@@ -1,6 +1,12 @@
 # AWS Migration Status - SiteLayout
 
-## Completed Tasks ✅
+## ✅ DEPLOYMENT COMPLETE
+
+**Backend API**: https://2mxzbn4kug.us-east-2.awsapprunner.com
+**Status**: RUNNING
+**Last Updated**: 2025-12-05
+
+## Completed Infrastructure ✅
 
 ### 1. RDS PostgreSQL Database
 - **Instance ID**: `sitelayout-db`
@@ -8,7 +14,7 @@
 - **Database Name**: `sitelayout`
 - **Engine**: PostgreSQL 16.8
 - **PostGIS Version**: 3.4
-- **Status**: Available and fully configured
+- **Status**: ✅ Available and connected
 - **Security Group**: `sg-0e34638c2e6dab8ed` (PostgreSQL port 5432 open)
 
 ### 2. AWS Secrets Manager
@@ -18,20 +24,23 @@
 ### 3. ECR Repository
 - **Repository Name**: `sitelayout-backend`
 - **URI**: `971422717446.dkr.ecr.us-east-2.amazonaws.com/sitelayout-backend`
-- **Images Pushed**: `latest`, `v1.0.0`
-- **Image Size**: 1.74GB
+- **Images Pushed**: `latest`, `v1.0.2`
+- **Image Architecture**: `linux/amd64`
 
 ### 4. VPC Connector
 - **Name**: `sitelayout-vpc-connector`
 - **ARN**: `arn:aws:apprunner:us-east-2:971422717446:vpcconnector/sitelayout-vpc-connector/1/2f83366a30fa42999b585880c9b1bcd5`
-- **Status**: ACTIVE
+- **Status**: ✅ ACTIVE
 
-### 5. App Runner Service (In Progress)
+### 5. App Runner Service ✅
 - **Service Name**: `sitelayout-backend`
-- **Service ARN**: `arn:aws:apprunner:us-east-2:971422717446:service/sitelayout-backend/5c325119796f4de0900cf54d310bfeaf`
-- **Service URL**: `https://psuxmxth9f.us-east-2.awsapprunner.com`
-- **Status**: Deploying...
-- **Note**: Needs VPC connector association and health check update
+- **Service ID**: `bade80c2299c462f9e43a81fc1b4e771`
+- **Service ARN**: `arn:aws:apprunner:us-east-2:971422717446:service/sitelayout-backend/bade80c2299c462f9e43a81fc1b4e771`
+- **Service URL**: `https://2mxzbn4kug.us-east-2.awsapprunner.com`
+- **Status**: ✅ RUNNING
+- **VPC Connector**: ✅ Associated
+- **Auto-deployments**: ✅ Enabled (triggers on ECR image push)
+- **Instance Config**: 1024 CPU, 2048 MB RAM
 
 ### 6. GitHub Actions
 - ✅ Updated `.github/workflows/backend-ci.yml` for AWS deployment
@@ -39,89 +48,63 @@
 - ✅ Added App Runner deployment automation
 - ✅ Dockerfile fixed with build tools for geospatial libraries
 
-## Next Steps 🚀
+### 7. Database Migrations
+- ✅ Alembic migrations run automatically on container start
+- ✅ PostgreSQL connection verified
 
-### Option 1: Build and Push Docker Image Locally
-1. **Start Docker Desktop** on your machine
-2. **Build and push the image**:
-   ```bash
-   cd /Users/zeno/Projects/sitelayout/backend
-   docker build -t 971422717446.dkr.ecr.us-east-2.amazonaws.com/sitelayout-backend:latest .
-   docker push 971422717446.dkr.ecr.us-east-2.amazonaws.com/sitelayout-backend:latest
-   ```
+## API Endpoints
 
-### Option 2: Use GitHub Actions (Recommended)
-1. **Add AWS credentials to GitHub Secrets**:
-   - Go to your repository settings
-   - Navigate to Secrets and variables → Actions
-   - Add these secrets:
-     - `AWS_ACCESS_KEY_ID`: [From your AWS credentials]
-     - `AWS_SECRET_ACCESS_KEY`: [From your AWS credentials]
+| Endpoint | Method | Description | Status |
+|----------|--------|-------------|--------|
+| `/` | GET | API info | ✅ Working |
+| `/health` | GET | Health check | ✅ Working |
 
-2. **Commit and push changes**:
-   ```bash
-   git add .github/workflows/backend-ci.yml
-   git commit -m "Update CI/CD for AWS deployment"
-   git push origin main
-   ```
+## Environment Variables
 
-3. **GitHub Actions will automatically**:
-   - Build the Docker image
-   - Push to ECR
-   - Deploy to App Runner (once service is created)
+The following environment variables are configured in App Runner:
 
-## Remaining Tasks
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `SECRET_KEY` | JWT signing key |
+| `ALGORITHM` | JWT algorithm (HS256) |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Token expiration |
+| `ENVIRONMENT` | production |
+| `DEBUG` | False |
+| `ALLOWED_ORIGINS` | JSON array of allowed CORS origins |
 
-### 8. Create AWS App Runner Service
-Once you have a Docker image in ECR, run:
-```bash
-aws apprunner create-service \
-  --service-name sitelayout-backend \
-  --source-configuration '{
-    "ImageRepository": {
-      "ImageIdentifier": "971422717446.dkr.ecr.us-east-2.amazonaws.com/sitelayout-backend:latest",
-      "ImageRepositoryType": "ECR",
-      "ImageConfiguration": {
-        "Port": "8000",
-        "RuntimeEnvironmentVariables": {
-          "DATABASE_URL": "postgresql://sitelayout_admin:u0th2i*9LRjR[G4g-m^4[5,A2iqSw2GA@sitelayout-db.c1uuigcm4bd1.us-east-2.rds.amazonaws.com:5432/sitelayout",
-          "SECRET_KEY": "VwIROk7i7vEQgHfsEApunaB3AuEnDunyru0LupCbJXtWVPFHj8avMOOH5560x7Wb",
-          "ALGORITHM": "HS256",
-          "ACCESS_TOKEN_EXPIRE_MINUTES": "10080",
-          "ENVIRONMENT": "production",
-          "DEBUG": "False"
-        }
-      }
-    },
-    "AutoDeploymentsEnabled": true
-  }' \
-  --instance-configuration '{
-    "Cpu": "1024",
-    "Memory": "2048"
-  }' \
-  --health-check-configuration '{
-    "Protocol": "HTTP",
-    "Path": "/health",
-    "Interval": 10,
-    "Timeout": 5,
-    "HealthyThreshold": 1,
-    "UnhealthyThreshold": 5
-  }' \
-  --tags "Key=Project,Value=sitelayout"
-```
+**Note**: `ALLOWED_ORIGINS` must be provided as a JSON array string, e.g.:
+`["http://localhost:3000","https://*.vercel.app"]`
 
-### 9. Configure VPC Connector
-After creating App Runner service, connect it to the VPC for RDS access.
+## Issues Fixed During Deployment
 
-### 10. Run Alembic Migrations
-Once App Runner is deployed, run migrations:
-```bash
-# From your local machine or via App Runner console
-alembic upgrade head
-```
+| Issue | Solution |
+|-------|----------|
+| Architecture mismatch | Docker image was built for ARM (Mac Silicon), rebuilt with `--platform linux/amd64` |
+| ALLOWED_ORIGINS parsing | pydantic-settings required JSON array format `["url1","url2"]` instead of comma-separated string |
 
-### 11. Update Vercel Frontend
-Update the API URL environment variable in Vercel to point to your App Runner service URL.
+## Remaining Tasks 🚀
+
+### 1. Update Vercel Frontend Environment
+Update the API URL in Vercel dashboard:
+1. Go to [Vercel Project Settings](https://vercel.com) → Your Project → Settings → Environment Variables
+2. Set `NEXT_PUBLIC_API_URL` to `https://2mxzbn4kug.us-east-2.awsapprunner.com`
+3. Redeploy for changes to take effect
+
+**Local `.env` already updated** ✅
+
+### 2. Add GitHub Secrets (Optional - for CI/CD)
+To enable automatic deployments via GitHub Actions:
+- Go to repository settings → Secrets and variables → Actions
+- Add:
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+
+### 3. Continue Phase II Development
+- User authentication endpoints
+- File upload endpoints
+- Terrain analysis
+- Asset placement
 
 ## Important Credentials 🔐
 

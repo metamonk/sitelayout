@@ -1,0 +1,46 @@
+{
+  "ServiceName": "sitelayout-backend",
+  "SourceConfiguration": {
+    "ImageRepository": {
+      "ImageIdentifier": "971422717446.dkr.ecr.us-east-1.amazonaws.com/site-layout-optimizer-backend:latest",
+      "ImageConfiguration": {
+        "Port": "8000",
+        "RuntimeEnvironmentVariables": {
+          "DATABASE_URL": "postgresql://pacifico_admin:Pac1f1co_dev_DB_98374!@pacifico-layouts-dev-postgres.crws0amqe1e3.us-east-1.rds.amazonaws.com:5432/pacifico_layouts",
+          "SECRET_KEY": "28858e63d1656913bdbe787d0d7d9a351cc14a3eef63db5b35a8027376c40e8c",
+          "ALGORITHM": "HS256",
+          "ACCESS_TOKEN_EXPIRE_MINUTES": "10080",
+          "ENVIRONMENT": "production",
+          "DEBUG": "False",
+          "ALLOWED_ORIGINS": "[\"http://localhost:3000\"]",
+          "MAX_UPLOAD_SIZE": "52428800",
+          "UPLOAD_DIR": "/tmp/uploads"
+        }
+      },
+      "ImageRepositoryType": "ECR"
+    },
+    "AutoDeploymentsEnabled": true,
+    "AuthenticationConfiguration": {
+      "AccessRoleArn": "arn:aws:iam::971422717446:role/service-role/AppRunnerECRAccessRole"
+    }
+  },
+  "InstanceConfiguration": {
+    "Cpu": "1 vCPU",
+    "Memory": "2 GB",
+    "InstanceRoleArn": "arn:aws:iam::971422717446:role/AppRunnerInstanceRole"
+  },
+  "HealthCheckConfiguration": {
+    "Protocol": "HTTP",
+    "Path": "/health",
+    "Interval": 10,
+    "Timeout": 5,
+    "HealthyThreshold": 1,
+    "UnhealthyThreshold": 5
+  },
+  "NetworkConfiguration": {
+    "EgressConfiguration": {
+      "EgressType": "VPC",
+      "VpcConnectorArn": "arn:aws:apprunner:us-east-1:971422717446:vpcconnector/sitelayout-vpc-connector/1/cff41e8a98cf46cfa277838382337111"
+    }
+  }
+}
