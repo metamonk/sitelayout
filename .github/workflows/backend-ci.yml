@@ -105,7 +105,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Deploy to AWS App Runner
+      - name: Verify App Runner deployment
         run: |
           # Get the App Runner service ARN
           SERVICE_ARN=$(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='sitelayout-backend'].ServiceArn | [0]" --output text)
@@ -115,6 +115,15 @@ jobs:
             exit 1
           fi
 
-          # Trigger a new deployment
-          aws apprunner start-deployment --service-arn $SERVICE_ARN
-          echo "Deployment triggered for App Runner service: $SERVICE_ARN"
+          # Auto-deployments are enabled, so ECR push triggers deployment automatically
+          # Just verify the service exists and report its status
+          echo "Service ARN: $SERVICE_ARN"
+
+          SERVICE_STATUS=$(aws apprunner describe-service --service-arn $SERVICE_ARN --query "Service.Status" --output text)
+          SERVICE_URL=$(aws apprunner describe-service --service-arn $SERVICE_ARN --query "Service.ServiceUrl" --output text)
+
+          echo "Service Status: $SERVICE_STATUS"
+          echo "Service URL: https://$SERVICE_URL"
+          echo ""
+          echo "Auto-deployment triggered by ECR push. Monitor deployment at:"
+          echo "https://console.aws.amazon.com/apprunner/home?region=us-east-1#/services/dashboard?service_arn=$SERVICE_ARN"
