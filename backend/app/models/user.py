@@ -28,5 +28,5 @@ class User(Base):
         if self.full_name:
             return self.full_name[:25]
         if self.email:
-            return self.email.split('@')[0][:25]
+            return self.email.split("@")[0][:25]
         return "User"

@@ -17,21 +17,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def root():
     return {
         "message": "Site Layout API",
         "version": settings.VERSION,
-        "status": "operational"
+        "status": "operational",
     }
+
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
 
 # API routers will be added here
 # from app.api import auth, projects, files, terrain, assets
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

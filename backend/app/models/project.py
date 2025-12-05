@@ -25,8 +25,8 @@ class Project(Base):
     status = Column(SQLEnum(ProjectStatus), default=ProjectStatus.DRAFT)
 
     # Spatial data
-    boundary_geom = Column(Geometry('POLYGON', srid=4326), nullable=True)
-    entry_point_geom = Column(Geometry('POINT', srid=4326), nullable=True)
+    boundary_geom = Column(Geometry("POLYGON", srid=4326), nullable=True)
+    entry_point_geom = Column(Geometry("POINT", srid=4326), nullable=True)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
