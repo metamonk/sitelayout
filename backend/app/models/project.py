@@ -1,10 +1,14 @@
-from sqlalchemy import Column, String, Text, ForeignKey, DateTime, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
-from geoalchemy2 import Geometry
-import uuid
 import enum
+import uuid
+
+from geoalchemy2 import Geometry
+from sqlalchemy import Column, DateTime
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+
 from app.db.base import Base
 
 
