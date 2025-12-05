@@ -1,28 +1,47 @@
 import uuid
+from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Boolean, Column, DateTime, String
+from sqlalchemy import Boolean, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.project import Project
 
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=True)  # Nullable for OAuth users
-    full_name = Column(String, nullable=True)
-    is_active = Column(Boolean, default=True)
-    is_superuser = Column(Boolean, default=False)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    email: Mapped[str] = mapped_column(String, unique=True, index=True)
+    hashed_password: Mapped[Optional[str]] = mapped_column(
+        String, nullable=True
+    )  # Nullable for OAuth users
+    full_name: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # OAuth fields
-    google_id = Column(String, unique=True, nullable=True, index=True)
-    oauth_provider = Column(String, nullable=True)  # 'google', 'email', etc.
+    google_id: Mapped[Optional[str]] = mapped_column(
+        String, unique=True, nullable=True, index=True
+    )
+    oauth_provider: Mapped[Optional[str]] = mapped_column(
+        String, nullable=True
+    )  # 'google', 'email', etc.
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    updated_at: Mapped[Optional[datetime]] = mapped_column(
+        onupdate=func.now(), nullable=True
+    )
+
+    # Relationships
+    projects: Mapped[list["Project"]] = relationship(back_populates="user")
 
     @property
     def display_name(self) -> str:
