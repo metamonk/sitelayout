@@ -28,7 +28,7 @@ class User(Base):
     def display_name(self) -> str:
         """Return display name with fallback logic."""
         if self.full_name:
-            return self.full_name[:25]
+            return str(self.full_name)[:25]
         if self.email:
-            return self.email.split("@")[0][:25]
+            return str(self.email).split("@")[0][:25]
         return "User"

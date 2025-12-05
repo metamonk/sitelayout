@@ -26,7 +26,9 @@ class Project(Base):
 
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
-    status = Column(SQLEnum(ProjectStatus), default=ProjectStatus.DRAFT)
+    status: Column[ProjectStatus] = Column(
+        SQLEnum(ProjectStatus), default=ProjectStatus.DRAFT
+    )
 
     # Spatial data
     boundary_geom = Column(Geometry("POLYGON", srid=4326), nullable=True)
