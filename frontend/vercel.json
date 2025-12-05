@@ -4,10 +4,6 @@
   "installCommand": "pnpm install",
   "framework": "nextjs",
   "regions": ["iad1"],
-  "env": {
-    "NEXT_PUBLIC_API_URL": "@sitelayout-api-url",
-    "NEXT_PUBLIC_MAPBOX_TOKEN": "@sitelayout-mapbox-token"
-  },
   "headers": [
     {
       "source": "/api/(.*)",
