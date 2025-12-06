@@ -316,14 +316,13 @@ class CRUDVolumeEstimation:
                 total_net_volume_m3=estimation.total_road_net_volume_m3 or 0.0,
             ).model_dump()
 
-            # type: ignore[assignment]
             result["processing_metadata"] = ProcessingMetadata(
                 dem_resolution_m=estimation.dem_resolution,
                 grid_cell_size_m=estimation.grid_resolution,
                 total_cells_analyzed=estimation.total_cells_analyzed,
                 processing_time_seconds=estimation.processing_time_seconds,
                 memory_peak_mb=estimation.memory_peak_mb,
-            ).model_dump()
+            ).model_dump()  # type: ignore[assignment]
 
         # Convert bounds geometry to GeoJSON
         if estimation.analysis_bounds is not None:
@@ -346,8 +345,9 @@ class CRUDVolumeEstimation:
                     for rv in estimation.road_volumes_detail
                 ]
             if estimation.visualization_data:
-                # type: ignore[assignment]
-                result["visualization_data"] = estimation.visualization_data
+                result[
+                    "visualization_data"
+                ] = estimation.visualization_data  # type: ignore[assignment]
 
         return result
 

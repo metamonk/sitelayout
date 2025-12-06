@@ -40,10 +40,12 @@ fastapi_app.add_middleware(
 
 # Register exception handlers
 fastapi_app.add_exception_handler(APIError, api_error_handler)  # type: ignore[arg-type]
-# type: ignore[arg-type]
-fastapi_app.add_exception_handler(HTTPException, http_exception_handler)
-# type: ignore[arg-type]
-fastapi_app.add_exception_handler(RequestValidationError, validation_exception_handler)
+fastapi_app.add_exception_handler(
+    HTTPException, http_exception_handler  # type: ignore[arg-type]
+)
+fastapi_app.add_exception_handler(
+    RequestValidationError, validation_exception_handler  # type: ignore[arg-type]
+)
 fastapi_app.add_exception_handler(Exception, generic_exception_handler)
 
 # Include API v1 router (auth, projects, etc.)
