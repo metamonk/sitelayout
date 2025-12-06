@@ -1,0 +1,45 @@
+#!/usr/bin/env sh
+
+# Get the project root directory (where .git is located)
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+
+# Run frontend lint and type-check
+echo "Running frontend lint..."
+cd "$PROJECT_ROOT/frontend" && pnpm lint
+if [ $? -ne 0 ]; then
+  echo "Frontend lint failed. Please fix the errors above."
+  exit 1
+fi
+
+echo "Running frontend type-check..."
+pnpm type-check
+if [ $? -ne 0 ]; then
+  echo "Frontend type-check failed. Please fix the errors above."
+  exit 1
+fi
+
+# Run backend linting
+cd "$PROJECT_ROOT/backend"
+
+echo "Running black check..."
+python3 -m black --check .
+if [ $? -ne 0 ]; then
+  echo "Black formatting check failed. Run 'python3 -m black .' to fix."
+  exit 1
+fi
+
+echo "Running flake8..."
+python3 -m flake8 .
+if [ $? -ne 0 ]; then
+  echo "Flake8 check failed. Please fix the errors above."
+  exit 1
+fi
+
+echo "Running isort check..."
+python3 -m isort --check-only .
+if [ $? -ne 0 ]; then
+  echo "isort check failed. Run 'python3 -m isort .' to fix."
+  exit 1
+fi
+
+echo "All checks passed!"

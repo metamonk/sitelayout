@@ -12,7 +12,6 @@ interface LayerControlProps {
 export default function LayerControl({
   layers,
   onLayerToggle,
-  onOpacityChange,
 }: LayerControlProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 

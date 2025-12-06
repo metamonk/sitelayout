@@ -230,7 +230,8 @@ class CRUDTerrainAnalysis:
 
         # Add elevation stats
         if analysis.elevation_min is not None:
-            result["elevation_stats"] = ElevationStatsResponse(  # type: ignore[assignment]
+            # type: ignore[assignment]
+            result["elevation_stats"] = ElevationStatsResponse(
                 min_value=analysis.elevation_min,
                 max_value=analysis.elevation_max or 0.0,
                 mean_value=analysis.elevation_mean or 0.0,

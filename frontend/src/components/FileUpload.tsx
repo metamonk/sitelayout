@@ -15,11 +15,6 @@ interface FileUploadProps {
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 const ALLOWED_EXTENSIONS = ['.kmz', '.kml'];
-const ALLOWED_MIME_TYPES = [
-  'application/vnd.google-earth.kmz',
-  'application/vnd.google-earth.kml+xml',
-  'application/octet-stream',
-];
 
 export default function FileUpload({ onUploadSuccess, onUploadError }: FileUploadProps) {
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
@@ -108,9 +103,10 @@ export default function FileUpload({ onUploadSuccess, onUploadError }: FileUploa
       setUploadStatus('success');
       setUploadedFilename(response.filename);
       onUploadSuccess?.(response.filename);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setUploadStatus('error');
-      const errorMessage = error.response?.data?.detail || error.message || 'Upload failed';
+      const err = error as { response?: { data?: { detail?: string } }; message?: string };
+      const errorMessage = err.response?.data?.detail || err.message || 'Upload failed';
       setValidationError(errorMessage);
       onUploadError?.(errorMessage);
     }

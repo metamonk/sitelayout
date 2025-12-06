@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { GeoJsonLayer } from 'deck.gl';
-import type { Feature, FeatureCollection } from 'geojson';
+import type { Feature } from 'geojson';
 import type { ExclusionZone, ZoneType } from '@/types/map';
 import { ZONE_COLORS, zonesToFeatureCollection } from '@/types/map';
 

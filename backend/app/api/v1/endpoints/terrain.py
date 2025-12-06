@@ -115,7 +115,10 @@ def request_terrain_analysis(
 
     # Check for cached results
     bounds_tuple: tuple[float, float, float, float] | None = (
-        tuple(analysis_in.bounds) if analysis_in.bounds else None  # type: ignore[assignment]
+        # type: ignore[assignment]
+        tuple(analysis_in.bounds)
+        if analysis_in.bounds
+        else None
     )
     input_hash = calculate_input_hash(dem_path, bounds_tuple) if dem_path else ""
     cached = terrain_crud.get_by_input_hash(db, project_id, input_hash)

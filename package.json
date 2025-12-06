@@ -1,0 +1,23 @@
+{
+  "name": "sitelayout",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BESS site layout tool - monorepo",
+  "scripts": {
+    "prepare": "husky",
+    "lint:frontend": "cd frontend && pnpm lint",
+    "lint:backend": "cd backend && python3 -m flake8 . && python3 -m black --check . && python3 -m isort --check-only .",
+    "lint:backend:fix": "cd backend && python3 -m black . && python3 -m isort .",
+    "type-check:frontend": "cd frontend && pnpm type-check",
+    "lint": "npm run lint:frontend && npm run lint:backend"
+  },
+  "devDependencies": {
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0"
+  },
+  "lint-staged": {
+    "frontend/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  }
+}
