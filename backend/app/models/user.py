@@ -10,7 +10,11 @@ from sqlalchemy.sql import func
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from app.models.asset_placement import AssetPlacement
+    from app.models.exclusion_zone import ExclusionZone
     from app.models.project import Project
+    from app.models.road_network import RoadNetwork
+    from app.models.uploaded_file import UploadedFile
 
 
 class User(Base):
@@ -42,6 +46,12 @@ class User(Base):
 
     # Relationships
     projects: Mapped[list["Project"]] = relationship(back_populates="user")
+    uploaded_files: Mapped[list["UploadedFile"]] = relationship(back_populates="user")
+    exclusion_zones: Mapped[list["ExclusionZone"]] = relationship(back_populates="user")
+    asset_placements: Mapped[list["AssetPlacement"]] = relationship(
+        back_populates="user"
+    )
+    road_networks: Mapped[list["RoadNetwork"]] = relationship(back_populates="user")
 
     @property
     def display_name(self) -> str:

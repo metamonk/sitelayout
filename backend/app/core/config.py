@@ -4,6 +4,15 @@ from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def parse_cors(v: Union[str, List[str]]) -> List[str]:
+    """Parse CORS origins from string or list."""
+    if isinstance(v, str) and v:
+        return [origin.strip() for origin in v.split(",") if origin.strip()]
+    elif isinstance(v, list):
+        return v
+    return []
+
+
 class Settings(BaseSettings):
     # Project
     PROJECT_NAME: str = "Site Layout API"
@@ -11,18 +20,14 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
 
     # CORS - accepts comma-separated string or JSON array from env
-    ALLOWED_ORIGINS: List[str] = [
-        "http://localhost:3000",
-        "http://localhost:8000",
-    ]
+    ALLOWED_ORIGINS: Union[str, List[str]] = (
+        "http://localhost:3000,http://localhost:8000"
+    )
 
     @field_validator("ALLOWED_ORIGINS", mode="before")
     @classmethod
     def parse_allowed_origins(cls, v: Union[str, List[str]]) -> List[str]:
-        if isinstance(v, str):
-            # Handle comma-separated string
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
-        return v
+        return parse_cors(v)
 
     # Database
     DATABASE_URL: str = "postgresql://user:password@localhost:5432/sitelayout"

@@ -32,31 +32,32 @@ sitelayout/
 
 ### Infrastructure
 - **Frontend Hosting**: Vercel
-- **Backend Hosting**: Railway
+- **Backend Hosting**: AWS App Runner (with ECR)
+- **Database**: AWS RDS PostgreSQL with PostGIS
 - **CI/CD**: GitHub Actions
 - **Version Control**: Git
 
-## Features (Phase 1)
+## Features
 
-### ✅ Completed
-- [x] Project repository structure
-- [x] Frontend setup with Next.js and TypeScript
-- [x] Backend setup with FastAPI and geospatial dependencies
-- [x] PostgreSQL database schema with PostGIS
+### ✅ Core Features
+- [x] User authentication (JWT + Google OAuth)
+- [x] Project management (create, list, update, delete)
+- [x] File upload interface (KMZ/KML) with validation
+- [x] Interactive map visualization (Deck.gl + Mapbox)
+- [x] Terrain analysis engine (elevation, slope, aspect)
+- [x] Exclusion zone management (wetlands, easements, setbacks)
+- [x] Asset auto-placement algorithm
+- [x] Road network generation
+- [x] Cut/fill volume estimation
+- [x] Export and reporting (PDF, GeoJSON, KMZ, DXF, CSV, Shapefile)
+
+### ✅ Infrastructure
 - [x] CI/CD pipelines (GitHub Actions)
-- [x] Deployment configurations (Vercel + Railway)
-- [x] Database migrations with Alembic
-
-### 🚧 In Progress
-- [ ] User authentication system (email/password + Google OAuth)
-- [ ] File upload interface (KMZ/KML)
-- [ ] Backend file validation and storage
-- [ ] Terrain analysis engine
-- [ ] Asset auto-placement
-- [ ] Road network generation
-- [ ] Cut/fill volume estimation
-- [ ] Map visualization
-- [ ] Export and reporting
+- [x] Frontend deployment (Vercel)
+- [x] Backend deployment (AWS App Runner + ECR)
+- [x] Database hosting (AWS RDS PostgreSQL + PostGIS)
+- [x] Database migrations (Alembic)
+- [x] Performance optimization (indexes, caching)
 
 ## Getting Started
 
@@ -120,19 +121,31 @@ The frontend deploys automatically to Vercel on push to the `main` branch.
 - `NEXT_PUBLIC_API_URL`
 - `NEXT_PUBLIC_MAPBOX_TOKEN`
 
-### Backend (Railway)
+### Backend (AWS App Runner)
 
-The backend deploys automatically to Railway on push to the `main` branch.
+The backend deploys automatically to AWS App Runner on push to the `master` branch.
 
-**Required Secrets:**
-- `RAILWAY_TOKEN`
+**Required GitHub Secrets:**
+- `AWS_ACCESS_KEY_ID` - AWS credentials
+- `AWS_SECRET_ACCESS_KEY` - AWS credentials
 
-**Environment Variables (Railway):**
-- `DATABASE_URL` - Provided by Railway's PostgreSQL service
+**AWS Resources:**
+- ECR Repository: `site-layout-optimizer-backend`
+- App Runner Service: `sitelayout-backend`
+- RDS PostgreSQL with PostGIS extension
+
+**Environment Variables (App Runner):**
+- `DATABASE_URL` - PostgreSQL connection string
 - `SECRET_KEY` - Generate with `openssl rand -hex 32`
-- `ALLOWED_ORIGINS` - Your frontend URL
+- `ALGORITHM` - JWT algorithm (HS256)
+- `ALLOWED_ORIGINS` - Frontend URLs (JSON array)
 - `GOOGLE_CLIENT_ID` - For OAuth
 - `GOOGLE_CLIENT_SECRET` - For OAuth
+
+**Live API Endpoints:**
+- API URL: `https://zwt2iazqjv.us-east-1.awsapprunner.com`
+- Health: `https://zwt2iazqjv.us-east-1.awsapprunner.com/health`
+- API Docs: `https://zwt2iazqjv.us-east-1.awsapprunner.com/docs`
 
 ## Development Workflow
 
@@ -185,13 +198,12 @@ mypy app
 
 ## Documentation
 
-- [Frontend README](./frontend/README.md)
-- [Backend README](./backend/README.md)
-- [API Documentation](http://localhost:8000/docs) (when running locally)
+- [API Documentation](./docs/API.md) - Complete API reference
+- [User Guide](./docs/USER_GUIDE.md) - Step-by-step usage instructions
+- [Deployment Guide](./docs/DEPLOYMENT.md) - Production deployment guide
+- [Interactive API Docs](https://zwt2iazqjv.us-east-1.awsapprunner.com/docs) - Swagger UI
 - [Product Requirements](/.taskmaster/docs/prd.md)
 - [Architecture](/.taskmaster/docs/architecture.md)
-- [Deployment Guide](./DEPLOYMENT.md)
-- [Phase 1 Summary](./PHASE1_SUMMARY.md)
 
 ## Task Management
 

@@ -13,7 +13,13 @@ from sqlalchemy.sql import func
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from app.models.asset_placement import AssetPlacement
+    from app.models.exclusion_zone import ExclusionZone
+    from app.models.road_network import RoadNetwork
+    from app.models.terrain_analysis import TerrainAnalysis
+    from app.models.uploaded_file import UploadedFile
     from app.models.user import User
+    from app.models.volume_estimation import VolumeEstimation
 
 
 class ProjectStatus(str, enum.Enum):
@@ -53,3 +59,21 @@ class Project(Base):
 
     # Relationships
     user: Mapped["User"] = relationship(back_populates="projects")
+    uploaded_files: Mapped[list["UploadedFile"]] = relationship(
+        back_populates="project"
+    )
+    terrain_analyses: Mapped[list["TerrainAnalysis"]] = relationship(
+        back_populates="project", cascade="all, delete-orphan"
+    )
+    exclusion_zones: Mapped[list["ExclusionZone"]] = relationship(
+        back_populates="project", cascade="all, delete-orphan"
+    )
+    asset_placements: Mapped[list["AssetPlacement"]] = relationship(
+        back_populates="project", cascade="all, delete-orphan"
+    )
+    road_networks: Mapped[list["RoadNetwork"]] = relationship(
+        back_populates="project", cascade="all, delete-orphan"
+    )
+    volume_estimations: Mapped[list["VolumeEstimation"]] = relationship(
+        back_populates="project", cascade="all, delete-orphan"
+    )

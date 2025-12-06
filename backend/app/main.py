@@ -1,16 +1,36 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1.api import api_router
 from app.core.config import settings
+from app.core.exceptions import (
+    APIError,
+    api_error_handler,
+    generic_exception_handler,
+    http_exception_handler,
+    validation_exception_handler,
+)
+from app.core.middleware import (
+    RateLimitMiddleware,
+    RequestLoggingMiddleware,
+    setup_logging,
+)
 
-app = FastAPI(
+# Setup logging
+setup_logging()
+
+# Create FastAPI application
+fastapi_app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description="Automated site layout generation API for BESS projects",
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
-# CORS middleware
-app.add_middleware(
+# CORS middleware (use FastAPI's built-in for compatibility)
+fastapi_app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
@@ -18,8 +38,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register exception handlers
+fastapi_app.add_exception_handler(APIError, api_error_handler)  # type: ignore[arg-type]
+fastapi_app.add_exception_handler(HTTPException, http_exception_handler)  # type: ignore[arg-type]
+fastapi_app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore[arg-type]
+fastapi_app.add_exception_handler(Exception, generic_exception_handler)
 
-@app.get("/")
+# Include API v1 router (auth, projects, etc.)
+fastapi_app.include_router(api_router, prefix=settings.API_V1_STR)
+
+
+@fastapi_app.get("/")
 async def root():
     return {
         "message": "Site Layout API",
@@ -28,12 +57,12 @@ async def root():
     }
 
 
-@app.get("/health")
+@fastapi_app.get("/health")
 async def health_check():
     return {"status": "healthy"}
 
 
-@app.get("/health/db")
+@fastapi_app.get("/health/db")
 async def database_health_check():
     """Check database connectivity."""
     from sqlalchemy import text
@@ -60,8 +89,11 @@ async def database_health_check():
         }
 
 
-# API routers will be added here
-# from app.api import auth, projects, files, terrain, assets
+# Wrap app with pure ASGI middleware (order: outermost first)
+# RequestLoggingMiddleware wraps RateLimitMiddleware wraps fastapi_app
+app = RequestLoggingMiddleware(
+    RateLimitMiddleware(fastapi_app, max_requests=100, window_seconds=60)
+)
 
 if __name__ == "__main__":
     import uvicorn
