@@ -19,6 +19,7 @@ pyproj==3.7.0
 # Authentication
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt==4.0.1  # Pin to 4.0.x for passlib compatibility (4.1+ has breaking changes)
 python-dotenv==1.0.1
 pydantic[email]==2.10.0
 pydantic-settings==2.6.1
