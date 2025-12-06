@@ -115,8 +115,7 @@ def request_terrain_analysis(
 
     # Check for cached results
     bounds_tuple: tuple[float, float, float, float] | None = (
-        # type: ignore[assignment]
-        tuple(analysis_in.bounds)
+        tuple(analysis_in.bounds)  # type: ignore[assignment]
         if analysis_in.bounds
         else None
     )
